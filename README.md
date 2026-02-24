@@ -1,1 +1,2 @@
-# Aula-Git-Colaboradores
+# Aula-git-Colaboradores
+Meu git colaborativo
