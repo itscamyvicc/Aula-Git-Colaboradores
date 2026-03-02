@@ -1,19 +1,18 @@
 // src/screens/NowPlayingScreen.js
-import React, { useRef, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
   Dimensions,
   SafeAreaView,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { usePlayer } from '../context/PlayerContext';
-import { Image } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const COVER_SIZE = width * 0.78;
@@ -218,7 +217,9 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   coverContainer: {
+    flex: 1,            // <--- Adicione isso
     alignItems: 'center',
+    justifyContent: 'center', // <--- Adicione isso para centralizar verticalmente
     marginBottom: 28,
   },
   coverImage: {
