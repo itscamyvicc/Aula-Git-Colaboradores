@@ -1,3 +1,9 @@
 # Aula-Git-Colaboradores
+Meu git colaborativo.
 
-salve salve, meu colaboras
+## Colaboradores
+
+ - Camilla
+ - Enzo
+ - Fábio
+ - Melissa
