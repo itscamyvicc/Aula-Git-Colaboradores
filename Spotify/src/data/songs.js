@@ -1,52 +1,49 @@
 // src/data/songs.js
-// Coloque seus arquivos de áudio na pasta assets/songs/
-// e suas capas na pasta assets/covers/
-
 const songs = [
   {
     id: '1',
-    title: 'Música 01',
-    artist: 'Artista 01',
-    duration: 210, // duração em segundos (3:30)
+    title: 'Color Your Night',
+    artist: 'Lotus Juice, Azumi Takahashi e ATLUS Sound Team',
+    duration: 210,
     audio: require('../../assets/songs/song1.mp3'),
-    cover: require('../../assets/covers/cover1.png'),
-    color: '#1a3a5c', // cor dominante para o fundo dinâmico
+    color: '#1a3a5c',
+    cover: require('../../assets/covers/cover1.jpg')
   },
   {
     id: '2',
-    title: 'Música 02',
-    artist: 'Artista 02',
+    title: 'Até que Durou',
+    artist: 'Péricles',
     duration: 195,
     audio: require('../../assets/songs/song2.mp3'),
-    cover: require('../../assets/covers/cover2.png'),
-    color: '#3a1a2e',
+    color: '#3a291a',
+    cover: require('../../assets/covers/cover2.jpg')
   },
   {
     id: '3',
-    title: 'Música 03',
-    artist: 'Artista 03',
+    title: 'Before I Forget',
+    artist: 'Slipknot',
     duration: 240,
     audio: require('../../assets/songs/song3.mp3'),
-    cover: require('../../assets/covers/cover3.png'),
-    color: '#1a3a2a',
+    color: '#3a1a1a',
+    cover: require('../../assets/covers/cover3.jpg')
   },
   {
     id: '4',
-    title: 'Música 04',
-    artist: 'Artista 04',
+    title: 'Otonoke',
+    artist: 'Creepy Nuts',
     duration: 180,
     audio: require('../../assets/songs/song4.mp3'),
-    cover: require('../../assets/covers/cover4.png'),
     color: '#3a2e1a',
+    cover: require('../../assets/covers/cover4.jpg')
   },
   {
     id: '5',
-    title: 'Música 05',
-    artist: 'Artista 05',
+    title: 'Yeah 3x',
+    artist: 'Chris Brown',
     duration: 225,
     audio: require('../../assets/songs/song5.mp3'),
-    cover: require('../../assets/covers/cover5.png'),
-    color: '#2a1a3a',
+    color: '#3a301a',
+    cover: require('../../assets/covers/cover5.jpg')
   },
 ];
 

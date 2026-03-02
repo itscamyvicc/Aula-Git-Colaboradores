@@ -3,25 +3,22 @@ import React from 'react';
 import {
   View,
   Text,
-  Image,
   FlatList,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { usePlayer } from '../context/PlayerContext';
 import SongItem from '../components/SongItem';
 import MiniPlayer from '../components/MiniPlayer';
-
-// Imagem de capa da playlist (placeholder)
-const PLAYLIST_COVER = require('../../assets/covers/playlist_cover.png');
+import { Image } from 'react-native';
 
 export default function PlaylistScreen({ navigation }) {
   const {
     songs,
-    currentSong,
     currentSongIndex,
     isPlaying,
     togglePlayPause,
@@ -34,73 +31,83 @@ export default function PlaylistScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <LinearGradient
-        colors={['#2a2a2a', '#121212']}
+        colors={['#3d6b35', '#0d1f0d', '#0a0a0a']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 0.4 }}
+        end={{ x: 0, y: 0.5 }}
       >
-        {/* Header - botão voltar */}
+        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity>
-            <Ionicons name="chevron-down" size={28} color="#fff" />
+            <Ionicons name="chevron-back" size={28} color="#fff" />
           </TouchableOpacity>
-          <Ionicons name="ellipsis-horizontal" size={24} color="#fff" />
+          <TouchableOpacity>
+            <Ionicons name="ellipsis-horizontal" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
 
         <FlatList
           data={songs}
           keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 140 }}
           ListHeaderComponent={
             <View style={styles.playlistHeader}>
-              {/* Capa da playlist */}
-              <Image source={PLAYLIST_COVER} style={styles.playlistCover} />
 
-              {/* Informações da playlist */}
-              <Text style={styles.playlistTitle}>Minha Playlist</Text>
-
-              <View style={styles.metaRow}>
-                <Image source={PLAYLIST_COVER} style={styles.avatarSmall} />
-                <Text style={styles.metaText}>Você • 2h 10min</Text>
+              {/* Capa da Playlist */}
+              <View style={styles.playlistCover}>
+                <Ionicons name="musical-notes" size={64} color="#b3b3b3" />
               </View>
 
-              {/* Botões de ação (não interativos) */}
+              {/* Título */}
+              <Text style={styles.playlistTitle}> Minha Playlist </Text>
+
+              {/* Meta info */}
+              <View style={styles.metaRow}>
+                <View style={styles.avatarSmall} />
+                <Text style={styles.metaText}> Silvano Careca </Text>
+              </View>
+
+              <View style={styles.metaRow2}>
+                <Ionicons name="globe-outline" size={14} color="#b3b3b3" />
+                <Text style={styles.metaText2}> 12 curtidas • 20 minutos </Text>
+              </View>
+
+              {/* Botões de ação */}
               <View style={styles.actionRow}>
                 <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="arrow-down-circle-outline" size={26} color="#b3b3b3" />
+                  <Ionicons name="arrow-down-circle-outline" size={28} color="#b3b3b3" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="person-add-outline" size={24} color="#b3b3b3" />
+                  <Ionicons name="person-add-outline" size={26} color="#b3b3b3" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="ellipsis-horizontal" size={24} color="#b3b3b3" />
+                  <Ionicons name="ellipsis-horizontal" size={26} color="#b3b3b3" />
                 </TouchableOpacity>
 
-                {/* Espaço flexível */}
                 <View style={{ flex: 1 }} />
 
-                {/* Botão shuffle */}
                 <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="shuffle" size={26} color="#b3b3b3" />
+                  <Ionicons name="shuffle" size={28} color="#b3b3b3" />
                 </TouchableOpacity>
 
-                {/* Botão Play principal */}
-                <TouchableOpacity
-                  style={styles.playButton}
-                  onPress={togglePlayPause}
-                >
+                {/* Botão Play */}
+                <TouchableOpacity style={styles.playButton} onPress={togglePlayPause}>
                   <Ionicons
                     name={isPlaying ? 'pause' : 'play'}
                     size={28}
                     color="#000"
+                    style={{ marginLeft: isPlaying ? 0 : 3 }}
                   />
                 </TouchableOpacity>
               </View>
 
-              {/* Opção de adicionar música (não interativa) */}
+              {/* Adicionar música */}
               <TouchableOpacity style={styles.addSongRow}>
                 <View style={styles.addSongIcon}>
-                  <Ionicons name="add" size={22} color="#fff" />
+                  <Ionicons name="add" size={24} color="#fff" />
                 </View>
                 <Text style={styles.addSongText}>Adicionar música</Text>
               </TouchableOpacity>
@@ -118,13 +125,27 @@ export default function PlaylistScreen({ navigation }) {
               }}
             />
           )}
-          contentContainerStyle={{ paddingBottom: 90 }}
-          showsVerticalScrollIndicator={false}
         />
 
-        {/* Mini Player */}
-        <View style={styles.miniPlayerContainer}>
+        {/* Mini Player + Navbar */}
+        <View style={styles.bottomContainer}>
           <MiniPlayer onPress={openNowPlaying} />
+
+          {/* Navbar inferior */}
+          <View style={styles.navbar}>
+            <TouchableOpacity style={styles.navItem}>
+              <Ionicons name="home" size={24} color="#fff" />
+              <Text style={styles.navText}>Início</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.navItem}>
+              <Ionicons name="search" size={24} color="#b3b3b3" />
+              <Text style={[styles.navText, { color: '#b3b3b3' }]}>Buscar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.navItem}>
+              <Ionicons name="library" size={24} color="#b3b3b3" />
+              <Text style={[styles.navText, { color: '#b3b3b3' }]}>Biblioteca</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </LinearGradient>
     </SafeAreaView>
@@ -153,29 +174,31 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   playlistCover: {
-    width: 200,
-    height: 200,
-    borderRadius: 4,
+    width: 190,
+    height: 190,
+    borderRadius: 6,
     backgroundColor: '#333',
     marginVertical: 20,
-    elevation: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
   },
   playlistTitle: {
     color: '#fff',
     fontSize: 22,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 4,
   },
   avatarSmall: {
     width: 22,
@@ -185,8 +208,20 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   metaText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  metaRow2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  metaText2: {
     color: '#b3b3b3',
     fontSize: 13,
+    marginLeft: 4,
   },
   actionRow: {
     flexDirection: 'row',
@@ -195,7 +230,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   actionButton: {
-    marginRight: 16,
+    marginRight: 18,
     padding: 4,
   },
   playButton: {
@@ -212,6 +247,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-start',
     marginBottom: 8,
+    paddingVertical: 4,
   },
   addSongIcon: {
     width: 50,
@@ -220,17 +256,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   addSongText: {
     color: '#fff',
     fontSize: 15,
     fontWeight: '500',
   },
-  miniPlayerContainer: {
+  bottomContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: '#121212',
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingBottom: 16,
+    borderTopWidth: 0.5,
+    borderTopColor: '#333',
+  },
+  navItem: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  navText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
   },
 });

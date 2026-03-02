@@ -1,4 +1,5 @@
 // src/context/PlayerContext.js
+
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Audio } from 'expo-av';
 import songs from '../data/songs';
@@ -8,77 +9,75 @@ const PlayerContext = createContext();
 export function PlayerProvider({ children }) {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);       // 0 a 1
-  const [currentTime, setCurrentTime] = useState(0); // em segundos
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
 
   const soundRef = useRef(null);
   const currentSong = songs[currentSongIndex];
 
-  // Configura o áudio para tocar em modo silencioso (iOS)
+  // Atualiza progresso automaticamente
   useEffect(() => {
-    Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-      staysActiveInBackground: false,
-    });
+    if (!soundRef.current) return;
+
+    const interval = setInterval(async () => {
+      const status = await soundRef.current.getStatusAsync();
+      if (status.isLoaded) {
+        setCurrentTime(status.positionMillis / 1000);
+        setProgress(
+          status.durationMillis
+            ? status.positionMillis / status.durationMillis
+            : 0
+        );
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  // Carrega nova música quando índice muda
+  useEffect(() => {
+    loadAndPlay();
+
     return () => {
       if (soundRef.current) {
         soundRef.current.unloadAsync();
       }
     };
-  }, []);
-
-  // Carrega e toca a música sempre que o índice muda
-  useEffect(() => {
-    loadAndPlay();
   }, [currentSongIndex]);
 
   async function loadAndPlay() {
-    // Descarrega o som anterior se existir
-    if (soundRef.current) {
-      await soundRef.current.unloadAsync();
-      soundRef.current = null;
-    }
-
-    setProgress(0);
-    setCurrentTime(0);
-
     try {
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+      }
+
       const { sound } = await Audio.Sound.createAsync(
         currentSong.audio,
-        { shouldPlay: true },
-        onPlaybackStatusUpdate
+        { shouldPlay: true }
       );
+
       soundRef.current = sound;
       setIsPlaying(true);
     } catch (error) {
       console.log('Erro ao carregar áudio:', error);
-    }
-  }
-
-  function onPlaybackStatusUpdate(status) {
-    if (status.isLoaded) {
-      const pos = status.positionMillis / 1000;
-      const dur = status.durationMillis / 1000 || currentSong.duration;
-      setCurrentTime(pos);
-      setProgress(dur > 0 ? pos / dur : 0);
-
-      // Música terminou
-      if (status.didJustFinish) {
-        handleNext();
-      }
+      setIsPlaying(false);
     }
   }
 
   async function togglePlayPause() {
     if (!soundRef.current) return;
-    if (isPlaying) {
+
+    const status = await soundRef.current.getStatusAsync();
+
+    if (status.isPlaying) {
       await soundRef.current.pauseAsync();
+      setIsPlaying(false);
     } else {
       await soundRef.current.playAsync();
+      setIsPlaying(true);
     }
-    setIsPlaying(!isPlaying);
   }
 
   function handleNext() {
@@ -94,12 +93,9 @@ export function PlayerProvider({ children }) {
   }
 
   function handlePrev() {
-    // Se já passou mais de 3 segundos, reinicia a música atual
-    if (currentTime > 3) {
-      soundRef.current?.setPositionAsync(0);
-      return;
-    }
-    setCurrentSongIndex((prev) => (prev - 1 + songs.length) % songs.length);
+    setCurrentSongIndex((prev) =>
+      prev === 0 ? songs.length - 1 : prev - 1
+    );
   }
 
   function playSong(index) {
