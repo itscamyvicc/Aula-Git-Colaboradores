@@ -1,3 +1,9 @@
 # Aula-Git-Colaboradores
-Meu git colaborativo pq quero
+Meu git colaborativo.
 
+## Colaboradores
+
+ - Camilla
+ - Enzo
+ - Fábio
+ - Melissa
