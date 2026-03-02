@@ -3,16 +3,17 @@ import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   StyleSheet,
   Animated,
   Dimensions,
   SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { usePlayer } from '../context/PlayerContext';
+import { Image } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const COVER_SIZE = width * 0.78;
@@ -38,12 +39,12 @@ export default function NowPlayingScreen({ navigation }) {
     setIsRepeat,
   } = usePlayer();
 
-  // Animação da capa (cresce quando tocando)
-  const coverScale = useRef(new Animated.Value(isPlaying ? 1 : 0.88)).current;
+  // Animação da capa
+  const coverScale = useRef(new Animated.Value(isPlaying ? 1 : 0.85)).current;
 
   useEffect(() => {
     Animated.spring(coverScale, {
-      toValue: isPlaying ? 1 : 0.88,
+      toValue: isPlaying ? 1 : 0.85,
       friction: 5,
       tension: 40,
       useNativeDriver: true,
@@ -54,21 +55,21 @@ export default function NowPlayingScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar barStyle="light-content" />
       <LinearGradient
-        colors={[currentSong?.color || '#1a1a2e', '#121212']}
+        colors={[currentSong?.color || '#1a3a1a', '#121212']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 0.6 }}
+        end={{ x: 0, y: 0.65 }}
       >
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBtn}>
-            <Ionicons name="chevron-down" size={28} color="#fff" />
+            <Ionicons name="chevron-down" size={30} color="#fff" />
           </TouchableOpacity>
 
           <View style={styles.headerCenter}>
             <Text style={styles.headerLabel}>TOCANDO AGORA</Text>
-            <Text style={styles.headerPlaylist}>Minha Playlist</Text>
           </View>
 
           <TouchableOpacity style={styles.headerBtn}>
@@ -76,12 +77,17 @@ export default function NowPlayingScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Capa do álbum com animação */}
+        {/* Capa do álbum (placeholder cinza com animação) */}
         <View style={styles.coverContainer}>
-          <Animated.View style={{ transform: [{ scale: coverScale }] }}>
-            <Image source={currentSong?.cover} style={styles.cover} />
-          </Animated.View>
-        </View>
+  <Animated.Image
+    source={currentSong?.cover}
+    style={[
+      styles.coverImage,
+      { transform: [{ scale: coverScale }] },
+    ]}
+    resizeMode="cover"
+  />
+</View>
 
         {/* Informações da música */}
         <View style={styles.infoRow}>
@@ -94,7 +100,7 @@ export default function NowPlayingScreen({ navigation }) {
             </Text>
           </View>
           <TouchableOpacity>
-            <Ionicons name="heart-outline" size={26} color="#b3b3b3" />
+            <Ionicons name="checkmark-circle" size={26} color="#1DB954" />
           </TouchableOpacity>
         </View>
 
@@ -107,7 +113,6 @@ export default function NowPlayingScreen({ navigation }) {
                 { width: `${Math.min(progress * 100, 100)}%` },
               ]}
             />
-            {/* Bolinha na ponta */}
             <View
               style={[
                 styles.progressThumb,
@@ -122,55 +127,61 @@ export default function NowPlayingScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Controles */}
+        {/* Controles principais */}
         <View style={styles.controls}>
           {/* Shuffle */}
           <TouchableOpacity onPress={() => setIsShuffle(!isShuffle)}>
             <Ionicons
               name="shuffle"
-              size={24}
+              size={26}
               color={isShuffle ? '#1DB954' : '#b3b3b3'}
             />
           </TouchableOpacity>
 
           {/* Anterior */}
           <TouchableOpacity onPress={handlePrev}>
-            <Ionicons name="play-skip-back" size={36} color="#fff" />
+            <Ionicons name="play-skip-back" size={38} color="#fff" />
           </TouchableOpacity>
 
           {/* Play / Pause */}
           <TouchableOpacity style={styles.playButton} onPress={togglePlayPause}>
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
-              size={34}
+              size={36}
               color="#000"
+              style={{ marginLeft: isPlaying ? 0 : 3 }}
             />
           </TouchableOpacity>
 
           {/* Próxima */}
           <TouchableOpacity onPress={handleNext}>
-            <Ionicons name="play-skip-forward" size={36} color="#fff" />
+            <Ionicons name="play-skip-forward" size={38} color="#fff" />
           </TouchableOpacity>
 
           {/* Repeat */}
           <TouchableOpacity onPress={() => setIsRepeat(!isRepeat)}>
             <Ionicons
               name="repeat"
-              size={24}
+              size={26}
               color={isRepeat ? '#1DB954' : '#b3b3b3'}
             />
           </TouchableOpacity>
         </View>
 
-        {/* Rodapé com opções extras */}
+        {/* Rodapé */}
         <View style={styles.footer}>
           <TouchableOpacity>
             <Ionicons name="laptop-outline" size={22} color="#b3b3b3" />
-          </TouchableOpacity>
-          <TouchableOpacity>
+          </TouchableOpacity> <TouchableOpacity>
             <Ionicons name="list-outline" size={22} color="#b3b3b3" />
           </TouchableOpacity>
         </View>
+
+        {/* Letras */}
+        <TouchableOpacity style={styles.lyricsButton}>
+          <Text style={styles.lyricsText}>Letras</Text>
+        </TouchableOpacity>
+
       </LinearGradient>
     </SafeAreaView>
   );
@@ -190,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: 12,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   headerBtn: {
     padding: 4,
@@ -201,32 +212,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerLabel: {
-    color: '#b3b3b3',
-    fontSize: 11,
+    color: '#fff',
+    fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1.5,
-  },
-  headerPlaylist: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '600',
-    marginTop: 2,
   },
   coverContainer: {
     alignItems: 'center',
     marginBottom: 28,
   },
-  cover: {
-    width: COVER_SIZE,
-    height: COVER_SIZE,
-    borderRadius: 6,
-    backgroundColor: '#333',
-    elevation: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
-  },
+  coverImage: {
+  width: COVER_SIZE,
+  height: COVER_SIZE,
+  borderRadius: 6,
+  elevation: 14,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 10 },
+  shadowOpacity: 0.5,
+  shadowRadius: 14,
+},
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -248,7 +252,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   progressWrapper: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   progressBarBackground: {
     height: 4,
@@ -283,13 +287,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 28,
+    marginBottom: 24,
   },
   playButton: {
     backgroundColor: '#fff',
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 66,
+    height: 66,
+    borderRadius: 33,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
@@ -297,6 +301,24 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    marginBottom: 16,
+  },
+  footerDevice: {
+    color: '#b3b3b3',
+    fontSize: 12,
+  },
+  lyricsButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#282828',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  lyricsText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
